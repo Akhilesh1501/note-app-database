@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ToDoItem from "./ToDoItem";
 import InputArea from "./InputArea";
 import Supabase from "../supabase";
+import OfflineModal from "../OfflineModal.tsx";
 import { FunctionsFetchError } from "@supabase/supabase-js";
 
 function App() {
@@ -12,7 +13,38 @@ function App() {
   
   const [inputError, setInputError] = useState("");
 
-  
+
+  let [online, isOnline] = useState(navigator.onLine);
+
+  const setOnline = () => {
+    console.log('We are online!');
+    isOnline(true);
+  };
+  const setOffline = () => {
+    console.log('We are offline!');
+    isOnline(false);
+  };
+
+
+  useEffect(() => {
+    window.addEventListener('offline', setOffline);
+    window.addEventListener('online', setOnline);
+
+    // cleanup if we unmount
+    return () => {
+      window.removeEventListener('offline', setOffline);
+      window.removeEventListener('online', setOnline);
+    }
+    ;
+  }, []);
+
+
+
+
+
+
+
+
   
 
   function handleChange(event) {
@@ -36,6 +68,10 @@ function App() {
     };
     allData();
   }, [Supabase]);
+
+
+  
+
 
 
 
@@ -95,6 +131,7 @@ function App() {
         }
       </ul>
     </div>
+    <OfflineModal display={!online} />
   </div>
 
   );
